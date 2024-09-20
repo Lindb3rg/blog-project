@@ -15,8 +15,36 @@ class Post(models.Model):
         self.published_date = timezone.now()
         self.save()
     
-    def approve_comment(self):
-        return self.comments.filter(approved_comments=True)
+    def approve_comments(self):
+        return self.comments.filter(approved_comment=True)
+    
+    def get_absolute_url(self):
+        return reverse("post_detail", kwargs={"pk": self.pk})
+    
     
     def __str__(self) -> str:
         return self.title
+
+
+
+class Comment(models.Model):
+    post = models.ForeignKey('blog_app.Post',on_delete=models.CASCADE, related_name="comments")
+    author = models.CharField(max_length=50)
+    text = models.TextField()
+    create_date = models.DateField(default=timezone.now())
+    approved_comment = models.BooleanField(default=False)
+    
+    
+    def approve(self):
+        self.approved_comment = True
+        self.save()
+        
+    def get_absolute_url(self):
+        return reverse("post_list")
+    
+    
+    def __str__(self) -> str:
+        return self.text
+    
+    
+    
